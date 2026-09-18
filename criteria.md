@@ -36,7 +36,6 @@ Every answer the system produces names at least one source document.
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
 
-I need my answer to be precise and believable.
 
 ---
 
@@ -55,7 +54,6 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
-I need to make sure that everyquestion has deserved answers.
 
 ---
 
@@ -73,7 +71,7 @@ I need to make sure that everyquestion has deserved answers.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-Every chunks must have at least 40 and no more than 600 characters
+Every chunks must have at least 150 and no more than 600 characters
 
 **Why this target:**
 
