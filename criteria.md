@@ -23,8 +23,8 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+"One of my questions is about a topic only two documents mention, so
+I expect that one to be hard."
 
 ---
 
@@ -35,6 +35,8 @@ Every answer the system produces names at least one source document.
 **Why this target:**
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
+
+I need my answer to be precise and believable.
 
 ---
 
@@ -53,6 +55,8 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
+I need to make sure that everyquestion has deserved answers.
+
 ---
 
 ## 4. Something about your chunks
@@ -69,11 +73,11 @@ in at least 4 of 5 tries.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-
+Every chunks must have at least 40 and no more than 600 characters
 
 **Why this target:**
 
-
+I need chunks not too small and not too big to give just enough information.
 
 ---
 
@@ -86,6 +90,7 @@ in at least 4 of 5 tries.
      handles badly, about source attribution being correct rather than merely
      present — anything, as long as it names a number or an observable
      outcome. -->
+
 
 
 
