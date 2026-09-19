@@ -134,14 +134,16 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
 
-**Question:**
+**Question:
+"What is the deadline for declaring a major?"**
 
 **Answer:**
 
 ```
+You declare a major at the end of your second semester, or later if you need to, as there is no penalty for declaring late (`admin_declaring_a_major.txt`).
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff:0.6**
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -152,9 +154,19 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 
      Milestone 4. -->
 
+
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| "What is the deadline for declaring a major?" | Yes | 0.302 |
+| "When will library close in reading week?" | Yes | 0.440 |
+| "Is morrow house noisy?" | Yes | 0.366 |
+| "Does CS 210 have a curve for the exams?" | Yes | 0.336 |
+| "What is the maximum hours per week for work-study?" | Yes | 0.462 |
+| "What is the capital of Mongolia?" | No | 0.825 |
+| "How do I change the oil in a diesel engine?" | No | 0.934 |
+| "Who won the 1994 World Cup?" | No | 0.886 |
+| "What is the recommended dosage of ibuprofen for a headache?" | No | 0.844 |
+| "How do I write a for loop in Rust?" | No | 0.896 |
 
 ## How I Used AI
 
