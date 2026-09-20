@@ -32,6 +32,8 @@ import chromadb  # noqa: E402
 import config
 from chunker import Chunk
 
+def _category_from_source(source: str) -> str:
+    return source.split("_")[0]
 
 @dataclass
 class Result:
@@ -170,7 +172,7 @@ def build_index(
             documents=[c.text for c in window],
             embeddings=embed([c.text for c in window]),
             metadatas=[
-                {"source": c.source, "index": c.index, "produced_by": c.produced_by}
+                {"source": c.source, "index": c.index, "produced_by": c.produced_by, "category": _category_from_source(c.source)}
                 for c in window
             ],
         )
@@ -183,6 +185,7 @@ def search(
     top_k: int | None = None,
     corpus: str | None = None,
     variant: str = "default",
+    category: str | None = None,
 ) -> list[Result]:
     """
     Retrieve the chunks closest in meaning to a question.
@@ -199,9 +202,12 @@ def search(
             f"No index called '{name}'. Run `python app.py index` first."
         ) from exc
 
+    where = {"category": category} if category else None
+
     raw = collection.query(
         query_embeddings=embed([question]),
         n_results=min(top_k, collection.count()),
+        where = where,
     )
 
     results: list[Result] = []

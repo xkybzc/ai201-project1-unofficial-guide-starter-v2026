@@ -26,6 +26,11 @@
      this repo.
 
      Milestone 5. -->
+This is a retrieval-augmented question system built over the campus_life corpus. You
+can ask question about courses, housing, dining, etc., and the system will retrieves
+the most relevant posts, and giving the answer. If nothing in the corpus related to
+the question, it says so instead of guessing.
+
 
 ## Chunking Strategy
 
@@ -180,14 +185,42 @@ You declare a major at the end of your second semester, or later if you need to,
      Milestone 5. -->
 
 **1.**
+"I asked Claude to check my 5th criteria. It gave me some suggestion about it,
+but I don't use that suggestion.
 
 **2.**
+"I asked Claude to help me creating the API key. It gave me a instruction on how to
+get it."
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
      ───────────────────────────────────────────────────────────────────────── -->
+## Stretch: Metadata Filtering
+I added a "category" field to each chunk's metadata, and added a "--category" flag to
+"python app.py retrieve" that filters result by it.
 
+**Without filter** — "python app.py retrieve "what does it cost"":
+    distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.5536     housing_calder_annexe.txt        Calder Annexe — what it's actually like  Second-year...
+2   0.6270     admin_printing_quota.txt         On the printing quota  Every student gets $30 of pri...
+3   0.6681     housing_fenwick_court.txt        Fenwick Court — what it's actually like  Just finish...
+4   0.6713     money_textbooks.txt              Textbooks without paying full price  The library hol...
+5   0.6822     housing_innisfree_hall.txt       Innisfree Hall — what it's actually like  Transferre...
+
+**With filter** — "python app.py retrieve "what does it cost" --category housing":
+    distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.5536     housing_calder_annexe.txt        Calder Annexe — what it's actually like  Second-year...
+2   0.6681     housing_fenwick_court.txt        Fenwick Court — what it's actually like  Just finish...
+3   0.6822     housing_innisfree_hall.txt       Innisfree Hall — what it's actually like  Transferre...
+4   0.7100     housing_aldridge_hall.txt        Aldridge Hall — what it's actually like  I lived her...
+5   0.7165     housing_morrow_house.txt         Morrow House — what it's actually like  Just finishe...
+
+Filtering removed the two non-housing results (printing quota, textbooks)
+and pulled in two additional housing results that weren't in the
+unfiltered
 ---
 
 # Unit 2
