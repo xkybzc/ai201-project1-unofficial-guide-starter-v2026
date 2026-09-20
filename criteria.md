@@ -35,7 +35,7 @@ Every answer the system produces names at least one source document.
 **Why this target:**
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
-
+"Each retrieved chunk have its filename directly, so I expect to achieve 5 out of 5 question."
 
 ---
 
@@ -53,7 +53,7 @@ in at least 4 of 5 tries.
 **Why this target:**
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
-
+"Some question can still close to the threshold by coincidence so I set 4 of 5 insted all of them."
 
 ---
 
@@ -74,8 +74,9 @@ in at least 4 of 5 tries.
 Every chunks must have at least 150 and no more than 600 characters
 
 **Why this target:**
+"The documents are short, so 150 characters should include the main idea, while
+600 characters will avoid merging different reviews."
 
-I need chunks not too small and not too big to give just enough information.
 
 ---
 
@@ -89,11 +90,12 @@ I need chunks not too small and not too big to give just enough information.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
-
-
+For a least 4 of 5 test questions, the answer must includes the specific fact that
+answer the question, plus at least additional specific information from the same source
+document
 
 **Why this target:**
-
+"Some documents may only have one fact worth reporting so I set 4 of 5 questions"
 
 
 ---
