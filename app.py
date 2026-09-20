@@ -184,6 +184,7 @@ def ask_pipeline(
     threshold=None,
     on_gate=None,
     on_prompt=None,
+    history = None,
 ):
     """Retrieve, gate, answer. Returns the outcome and prints nothing.
 
@@ -227,12 +228,12 @@ def ask_pipeline(
         outcome["answer"] = gate.REFUSAL
         return outcome
 
-    prompt = build_prompt(question, results)
+    prompt = build_prompt(question, results, history=history)
     if on_prompt is not None:
         on_prompt(prompt)
 
     outcome["prompt"] = prompt
-    outcome["answer"] = answer_from_chunks(question, results)
+    outcome["answer"] = answer_from_chunks(question, results, history=history)
     outcome["sources"] = sorted({r.source for r in results})
     return outcome
 
@@ -245,6 +246,7 @@ def _ask_one(
     threshold,
     show_distances=True,
     show_prompt=False,
+    history = None,
 ):
     import gate
     from generate import GROUNDING_INSTRUCTION
@@ -272,6 +274,7 @@ def _ask_one(
         threshold=threshold,
         on_gate=print_distances if show_distances else None,
         on_prompt=print_prompt if show_prompt else None,
+        history = history,
     )
 
     if outcome["refused"]:
@@ -286,6 +289,7 @@ def _ask_one(
 def cmd_ask(args):
     corpus = args.corpus or config.CORPUS
     import generate as gen
+    import gate
 
     try:
         if args.question:
@@ -299,6 +303,7 @@ def cmd_ask(args):
             )
         else:
             print("Ask a question, or press Enter on an empty line to quit.\n")
+            last_history = None
             while True:
                 try:
                     question = input("> ").strip()
@@ -307,14 +312,17 @@ def cmd_ask(args):
                     break
                 if not question:
                     break
-                _ask_one(
+                outcome =_ask_one(
                     question,
                     corpus,
                     args.variant,
                     args.top_k,
                     args.threshold,
                     show_prompt=args.show_prompt,
+                    history = last_history,
                 )
+                if outcome and outcome != gate.REFUSAL:
+                    last_history = f"Q: {question}\nA: {outcome}"
     finally:
         print(gen.usage())
 

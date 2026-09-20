@@ -186,11 +186,12 @@ You declare a major at the end of your second semester, or later if you need to,
 
 **1.**
 "I asked Claude to check my 5th criteria. It gave me some suggestion about it,
-but I don't use that suggestion.
+but I don't use that suggestion."
 
 **2.**
-"I asked Claude to help me creating the API key. It gave me a instruction on how to
-get it."
+"When testing the conversational memory, the history block wasn't showing at all.
+So I asked Claude, and turn out, I was running two seperate "python app.py ask" command.
+It supposed to run 2 questions in the same session."
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
@@ -203,24 +204,42 @@ I added a "category" field to each chunk's metadata, and added a "--category" fl
 **Without filter** — "python app.py retrieve "what does it cost"":
 | distance | source | preview |
 |---|---|---|
-|0.5536     |housing_calder_annexe.txt        |Calder Annexe — what it's actually like  Second-year...
-|0.6270     |admin_printing_quota.txt         |On the printing quota  Every student gets $30 of pri...
-|0.6681     |housing_fenwick_court.txt        |Fenwick Court — what it's actually like  Just finish...
-|0.6713     |money_textbooks.txt              |Textbooks without paying full price  The library hol...
-|0.6822     |housing_innisfree_hall.txt       |Innisfree Hall — what it's actually like  Transferre...
+|0.5536     |housing_calder_annexe.txt        |Calder Annexe — what it's actually like  Second-year...|
+|0.6270     |admin_printing_quota.txt         |On the printing quota  Every student gets $30 of pri...|
+|0.6681     |housing_fenwick_court.txt        |Fenwick Court — what it's actually like  Just finish...|
+|0.6713     |money_textbooks.txt              |Textbooks without paying full price  The library hol...|
+|0.6822     |housing_innisfree_hall.txt       |Innisfree Hall — what it's actually like  Transferre...|
 
 **With filter** — "python app.py retrieve "what does it cost" --category housing":
 | distance | source | preview |
 |---|---|---|
-|0.5536     |housing_calder_annexe.txt        |Calder Annexe — what it's actually like  Second-year...
-|0.6681     |housing_fenwick_court.txt        |Fenwick Court — what it's actually like  Just finish...
-|0.6822     |housing_innisfree_hall.txt       |Innisfree Hall — what it's actually like  Transferre...
-|0.7100     |housing_aldridge_hall.txt        |Aldridge Hall — what it's actually like  I lived her...
-|0.7165     |housing_morrow_house.txt         |Morrow House — what it's actually like  Just finishe...
+|0.5536     |housing_calder_annexe.txt        |Calder Annexe — what it's actually like  Second-year...|
+|0.6681     |housing_fenwick_court.txt        |Fenwick Court — what it's actually like  Just finish...|
+|0.6822     |housing_innisfree_hall.txt       |Innisfree Hall — what it's actually like  Transferre...|
+|0.7100     |housing_aldridge_hall.txt        |Aldridge Hall — what it's actually like  I lived her...|
+|0.7165     |housing_morrow_house.txt         |Morrow House — what it's actually like  Just finishe...|
 
+**What change:**
 Filtering removed the two non-housing results (printing quota, textbooks)
 and pulled in two additional housing results that weren't in the
 unfiltered
+
+
+## Stretch: Conversational memory
+I added "history" parameter, so the previous question and answer get include in the next prompt
+
+**Question 1:** "what's Aldridge Hall like?"
+> Aldridge Hall is a building constructed in 1968 and renovated in 2019...
+> Laundry costs $1.75 to wash and $1.50 to dry using a card only...
+> Source: housing_aldridge_hall.txt
+
+**Question 2:** "what's about the laundry there?"
+> In Aldridge Hall, laundry costs $1.75 to wash and $1.50 to dry using a card only. There are eight washers and six dryers...
+> Source: housing_aldridge_hall_laundry.txt
+
+In question 2, if there is no history, it will pull back laundry chunks for different buildings. However, with history included,
+retrieval still returns the same 5 builiding's chunks, but the model narrows it answer to the building from question 1,
+showing the second answer depends on the first one rather than sharing the topic.
 ---
 
 # Unit 2

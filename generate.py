@@ -282,7 +282,7 @@ Rules:
 - Be brief. Two or three sentences is usually enough."""
 
 
-def build_prompt(question: str, results) -> str:
+def build_prompt(question: str, results, history: str | None = None) -> str:
     """
     Assemble the grounded prompt out of retrieved chunks.
 
@@ -294,14 +294,20 @@ def build_prompt(question: str, results) -> str:
     context = "\n\n".join(
         f"[from {r.source}]\n{r.text}" for r in results
     )
+    history_block = (
+        f"Previous exchange (for context on what a pronoun like 'there' or "
+        f"'it' refers to — do not treat this as a source of facts):\n"
+        f"{history}\n\n"
+        if history else ""
+    )
     return (
-        f"Documents:\n\n{context}\n\n"
+        f"{history_block}Documents:\n\n{context}\n\n"
         f"---\n\nQuestion: {question}\n\n"
         f"Answer using only the documents above, and name the file you used."
     )
 
 
-def answer_from_chunks(question: str, results, cache: bool = True) -> str:
+def answer_from_chunks(question: str, results, cache: bool = True, history: str | None = None) -> str:
     """
     Build a grounded prompt out of retrieved chunks and send it.
 
@@ -309,5 +315,5 @@ def answer_from_chunks(question: str, results, cache: bool = True) -> str:
     first — it has already decided these chunks are close enough to be worth
     answering from.
     """
-    prompt = build_prompt(question, results)
+    prompt = build_prompt(question, results, history=history)
     return generate(prompt, system=GROUNDING_INSTRUCTION, cache=cache)
