@@ -241,6 +241,8 @@ I added "history" parameter, so the previous question and answer get include in 
 In question 2, if there is no history, it will pull back laundry chunks for different buildings. However, with history included,
 retrieval still returns the same 5 builiding's chunks, but the model narrows it answer to the building from question 1,
 showing the second answer depends on the first one rather than sharing the topic.
+
+
 ---
 
 # Unit 2
