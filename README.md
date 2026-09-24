@@ -265,15 +265,58 @@ showing the second answer depends on the first one rather than sharing the topic
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunk size ( 150 - 600 characters ) | ALL CHUNKS | pass | pass | pass | MET |
+| 5. Answer includes fact + 1 detail | 4 of 5 | 3/5 | 3/5 | 3/5 | MISSED |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+**Criterion 1 — Retrieved chunk contains the answer**
+Produced by: `store.py::search`, `chunker.py::split_documents`
+> Question: What is the deadline for declaring a major?
+
+> Best distance: 0.3025 (passed the gate)
+> Sources retrieved: admin_add_drop_deadline.txt, admin_declaring_a_major.txt, admin_graduation_requirements.txt, admin_pass_fail_option.txt, course_cs_340.txt
+>
+> You declare at the end of your second semester, or later if you need to, because there is no penalty for declaring late.
+>
+> Source: admin_declaring_a_major.txt
+
+**Criterion 2 — Every answer names a source**
+Produced by: `generate.py::answer_from_chunks`
+>Question: Does CS 210 have a curve for the exams?
+
+> Yes, the midterms for CS 210 are curved, but the final is not curved.
+>
+> Sources: `course_cs_210.txt` and `course_cs_210_exams.txt`
+
+**Criterion 3 — Gate stops out-of-corpus questions**
+Produced by: `gate.py::check`
+
+> What is the capital of Mongolia?
+> Best distance: 0.825 — refused
+>
+> (5 of 5 out-of-scope questions refused)
+
+**Criterion 4 — Chunk size (150–600 characters)**
+Produced by: `chunker.py::split_documents`
+
+> 88 chunks, 317 characters on average (shortest 178, longest 549)
+> 0 documents exceeded 600 characters — every document remained one
+> chunk, within bounds.
+
+**Criterion 5 — Answer includes the fact plus one related detail**
+Produced by: `generate.py::answer_from_chunks`
+
+> The library is open until 10pm during reading week (study_library_hours.txt).
+
+This shows why criterion 5 is MISSED: the answer did answer the question
+but includes no second related detail, unlike questions like "Is Morrow House noisy?"
+which included both a fact and a follow-up detail from the same source.
+
 
 ## Verdicts
 
