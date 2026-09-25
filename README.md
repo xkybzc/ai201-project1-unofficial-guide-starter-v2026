@@ -331,11 +331,11 @@ which included both a fact and a follow-up detail from the same source.
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunk contains the answer (4 of 5) | MET | All 5 quesions had the answer in the retrieved chunk, in all 3 runs. |
+| 2 | Every answer names a source (5 of 5) | MET | Every answers (15 in total) all named at least one source. |
+| 3 | Gate stops out-of-corpus questions (4 of 5) | MET | All 5 out of scope questions were refused. |
+| 4 | Chunk size (150 - 600 characters) | MET | 0 of 88 documents exceed 600 characters or lower than 150. |
+| 5 | Answer includes fact + 1 detail (4 of 5) | MISSED | Only 3 of 5 questions included a second relative detail. |
 
 ## Diagnoses
 
