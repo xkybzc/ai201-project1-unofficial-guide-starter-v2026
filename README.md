@@ -193,6 +193,10 @@ but I don't use that suggestion."
 So I asked Claude, and turn out, I was running two seperate "python app.py ask" command.
 It supposed to run 2 questions in the same session."
 
+**3.**
+"I asked Claude to help diagnose one miss by pipleline stage, and the cause is the source,
+which exactly as I thinking.
+
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
@@ -409,6 +413,9 @@ comes from two source documents, not retrieval mechanism issue.
      not.
 
      Milestone 5. -->
+**Criterion 5**
+What I'd do about it: rewrite the two documents to include a second fact.
+Why I stopped where I did: I cannot do anything else because it the document's issues.
 
 ## What I'd Do Differently
 
@@ -416,3 +423,5 @@ comes from two source documents, not retrieval mechanism issue.
      differently, and why?
 
      Milestone 5. -->
+I'd rewrite the criterion 5 to only apply where the source document actually contains more than one fact.
+Also, maybe the criterion 4 cause the none of the documents exceed the 600 characters.
