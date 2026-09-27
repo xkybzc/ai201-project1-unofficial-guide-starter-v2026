@@ -356,6 +356,13 @@ which included both a fact and a follow-up detail from the same source.
      low, and which one you'd tighten and to what.
 
      Milestone 3. -->
+**Criterion 5: Answer includes facts + one related detail**
+
+Stage: Loading
+
+Retrieval found the right chunk in all 5 questions, and show what actually in there, rather than
+inventing a new fact. The sources for question 2 and 5 only have one fact. The criterion assumed
+richer source material than the document actually have.
 
 ## The Improvement
 
