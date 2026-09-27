@@ -28,6 +28,10 @@ from dataclasses import dataclass
 os.environ.setdefault("ANONYMIZED_TELEMETRY", "False")
 
 import chromadb  # noqa: E402
+try:
+    from rank_bm25 import BM25Okapi
+except ImportError:
+    BM25Okapi = None
 
 import config
 from chunker import Chunk
@@ -179,6 +183,30 @@ def build_index(
 
     return len(chunks)
 
+def _hybrid_rerank(question: str, candidates: list[Result], top_k: int) -> list[Result]:
+    if BM25Okapi is None or not candidates:
+        return candidates[:top_k]
+
+    tokenized = [c.text.lower().split() for c in candidates]
+    bm25 = BM25Okapi(tokenized)
+    bm25_scores = bm25.get_scores(question.lower().split())
+
+    bm25_ranked = sorted(
+        range(len(candidates)), key=lambda i: bm25_scores[i], reverse=True
+    )
+    bm25_rank_of = {idx: rank for rank, idx in enumerate(bm25_ranked)}
+
+    k = 60
+    fused_scores = []
+    for semantic_rank, _ in enumerate(candidates):
+        b_rank = bm25_rank_of[semantic_rank]
+        fused = 1.0 / (k + semantic_rank) + 1.0 / (k + b_rank)
+        fused_scores.append(fused)
+
+    order = sorted(
+        range(len(candidates)), key=lambda i: fused_scores[i], reverse=True
+    )
+    return [candidates[i] for i in order[:top_k]]
 
 def search(
     question: str,
@@ -202,6 +230,12 @@ def search(
             f"No index called '{name}'. Run `python app.py index` first."
         ) from exc
 
+    pool_size = top_k * 4 if config.HYBRID_SEARCH else top_k
+    raw = collection.query(
+        query_embeddings=embed([question]),
+        n_results=min(pool_size, collection.count()),
+    )
+
     where = {"category": category} if category else None
 
     raw = collection.query(
@@ -223,6 +257,12 @@ def search(
                 produced_by=str(meta.get("produced_by", "unknown")),
             )
         )
+
+    if config.HYBRID_SEARCH:
+        results = _hybrid_rerank(question, results, top_k)
+    else:
+        results = results[:top_k]
+    
     return results
 
 

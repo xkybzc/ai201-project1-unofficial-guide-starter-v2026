@@ -367,8 +367,10 @@ richer source material than the document actually have.
 ## The Improvement
 
 **What I changed:**
+Add hybrid search - BM25 keyword matching combined with existing search
 
 **Why I picked it:**
+I want to test whether this hybrid search can improve retrieval quality.
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
@@ -380,11 +382,11 @@ richer source material than the document actually have.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunk size (150-600 characters) | all chunks | PASS | PASS | PASS | MET |
+| 5. Answer includes fact + 1 detail (4 of 5)| 3/5 | 3/5 | 3/5 | 3/5 | MISSED |
 
 **Did it help?**
 
@@ -394,6 +396,9 @@ richer source material than the document actually have.
      tell.
 
      Milestone 4. -->
+No. The retrieval source for all 5 questions were still the same. The searching machenic is
+already optimal, so adding BM25 can not improve anything. This confirm that criterion 5's miss
+comes from two source documents, not retrieval mechanism issue.
 
 ## What's Still Broken
 
