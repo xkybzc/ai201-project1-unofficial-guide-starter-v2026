@@ -425,3 +425,9 @@ Why I stopped where I did: I cannot do anything else because it the document's i
      Milestone 5. -->
 I'd rewrite the criterion 5 to only apply where the source document actually contains more than one fact.
 Also, maybe the criterion 4 cause the none of the documents exceed the 600 characters.
+
+
+## Capstone
+**Shape and Path:** Shape A, deploy and instrument, on Path B, local with logs. Before this unit, serve.py could answer questions over HTTP but left no record of what it did, so nothing it did could be checked afterwards. The extension is the operational layer around the pipeline that already exists. Every run, whether answered, refused by the gate, crashed, or rejected for missing input, writes one JSON record to logs/runs.jsonl. The record has named fields for the question, the answer, total time split into retrieval and generation, the best distance, the sources, and the token counts the model service reported. python serve.py starts the whole system from a clean checkout, building the index first if there isn’t one. measure_cost.py turns ten uncached runs from that log into a per-run cost.
+
+**Out of scope:** I not choose path A
