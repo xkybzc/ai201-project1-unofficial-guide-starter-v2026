@@ -202,11 +202,11 @@ def ask_pipeline(
     import time
 
     import generate as gen
-    import runlog
+    import run_log
 
     record = {
-        "ts": runlog.now_iso(),
-        "run_id": runlog.new_run_id(),
+        "ts": run_log.now_iso(),
+        "run_id": run_log.new_run_id(),
         "entrypoint": entrypoint,
         "question": question,
         "retrieve_ms": None,
@@ -238,7 +238,7 @@ def ask_pipeline(
             output_tokens=tokens_after["output"] - tokens_before["output"],
             http_status=500 if entrypoint == "http" else None,
         )
-        runlog.write(record)
+        run_log.write(record)
         exc.run_id = record["run_id"]  # lets serve.py return it
         raise
 
@@ -259,7 +259,7 @@ def ask_pipeline(
         error=None,
         http_status=200 if entrypoint == "http" else None,
     )
-    runlog.write(record)
+    run_log.write(record)
     outcome["run_id"] = record["run_id"]
     outcome["duration_ms"] = record["duration_ms"]
     return outcome

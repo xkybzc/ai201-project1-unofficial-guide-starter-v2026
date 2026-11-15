@@ -20,11 +20,10 @@ Why this exists: `app.py` runs once and exits, which is fine on your laptop
 and impossible to deploy. A hosted service has to stay up and wait for
 requests. This is the smallest thing that does that.
 
-⚠️ There is deliberately no logging, no timing and no metrics in this file.
-Unit 9 has you build the structured log yourself — the request line, the
-timing field everyone skips, the whole instrument-before-you-deploy exercise.
-Shipping a logger here would hand you the answer to that. Add yours in unit 9;
-this file stays the bare shell until then.
+Capstone (unit 9, shape A): every request to /ask now leaves one record in
+`logs/runs.jsonl`. Answered, refused and crashed runs are logged by
+`app.py::ask_pipeline`; requests rejected here for bad input never reach the
+pipeline, so this file logs those itself. See `runlog.py` for the fields.
 """
 
 import os
@@ -71,26 +70,56 @@ def ask():
     system working — it is an answer, and the JSON says so with
     `"refused": true` so whatever calls this can tell the two apart.
     """
+    import time
+
+    import runlog
     from app import ask_pipeline
 
+    started = time.perf_counter()
     payload = request.get_json(silent=True) or {}
-    question = (payload.get("question") or "").strip()
+    raw = payload.get("question") if isinstance(payload, dict) else None
+    question = raw.strip() if isinstance(raw, str) else ""
 
     if not question:
+        message = (
+            "Send JSON with a question in it, like "
+            '{"question": "is the housing lottery random?"}'
+        )
+        row = runlog.write(
+            {
+                "ts": runlog.now_iso(),
+                "run_id": runlog.new_run_id(),
+                "entrypoint": "http",
+                "status": "rejected",
+                # What actually arrived, so a bad client can be diagnosed later.
+                "question": repr(raw) if raw is not None else request.get_data(as_text=True)[:200],
+                "answer": None,
+                "duration_ms": round((time.perf_counter() - started) * 1000, 1),
+                "retrieve_ms": None,
+                "generate_ms": 0.0,
+                "model_calls": 0,
+                "cache_hit": False,
+                "prompt_tokens": 0,
+                "output_tokens": 0,
+                "error": "rejected input: no question",
+                "http_status": 400,
+            }
+        )
+        return jsonify({"error": message, "run_id": row["run_id"]}), 400
+
+    try:
+        outcome = ask_pipeline(question, corpus=config.CORPUS, entrypoint="http")
+    except Exception as exc:  # noqa: BLE001 — a reader gets this, not a traceback
+        # ask_pipeline has already written the error record before re-raising.
         return (
             jsonify(
                 {
-                    "error": "Send JSON with a question in it, like "
-                    '{"question": "is the housing lottery random?"}'
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "run_id": getattr(exc, "run_id", None),
                 }
             ),
-            400,
+            500,
         )
-
-    try:
-        outcome = ask_pipeline(question, corpus=config.CORPUS)
-    except Exception as exc:  # noqa: BLE001 — a reader gets this, not a traceback
-        return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 500
 
     return jsonify(
         {
@@ -101,6 +130,8 @@ def ask():
             "best_distance": round(outcome["best_distance"], 4),
             "threshold": outcome["threshold"],
             "corpus": config.CORPUS,
+            "run_id": outcome["run_id"],
+            "duration_ms": outcome["duration_ms"],
         }
     )
 
@@ -118,6 +149,25 @@ def main():
     # runs arbitrary code, which is not something to leave switched on where
     # strangers can reach it. Off unless you ask for it.
     debug = os.getenv("AI201_DEBUG", "0") == "1"
+
+    # Capstone: on a clean checkout there is no index (chroma_db/ is
+    # gitignored), so build one before serving. This is what makes
+    # `python serve.py` the single start command in RUNNING.md.
+    from store import index_exists
+
+    if not index_exists(config.CORPUS):
+        import time
+
+        from chunker import split_documents
+        from ingest import load_documents
+        from store import build_index
+
+        print(f"No index for '{config.CORPUS}' yet — building it (first run "
+              f"also downloads the ~80 MB embedding model)...")
+        t0 = time.perf_counter()
+        count = build_index(split_documents(load_documents(config.CORPUS)),
+                            corpus=config.CORPUS)
+        print(f"Indexed {count} chunks in {time.perf_counter() - t0:.1f}s\n")
 
     print(f"Serving The Unofficial Guide on http://localhost:{port}")
     print(f"Corpus: {config.CORPUS}    (Ctrl-C to stop)\n")
