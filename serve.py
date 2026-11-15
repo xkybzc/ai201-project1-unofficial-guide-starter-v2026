@@ -72,7 +72,7 @@ def ask():
     """
     import time
 
-    import runlog
+    import run_log
     from app import ask_pipeline
 
     started = time.perf_counter()
@@ -85,10 +85,10 @@ def ask():
             "Send JSON with a question in it, like "
             '{"question": "is the housing lottery random?"}'
         )
-        row = runlog.write(
+        row = run_log.write(
             {
-                "ts": runlog.now_iso(),
-                "run_id": runlog.new_run_id(),
+                "ts": run_log.now_iso(),
+                "run_id": run_log.new_run_id(),
                 "entrypoint": "http",
                 "status": "rejected",
                 # What actually arrived, so a bad client can be diagnosed later.
