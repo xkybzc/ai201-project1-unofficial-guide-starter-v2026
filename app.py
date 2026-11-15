@@ -185,6 +185,89 @@ def ask_pipeline(
     on_gate=None,
     on_prompt=None,
     history = None,
+    entrypoint="cli",
+    cache=True,
+):
+    """Retrieve, gate, answer — and leave one record in the run log.
+
+    Capstone (unit 9, shape A): every call writes exactly one line to
+    `logs/runs.jsonl` through `runlog.py`, whether it answered, was refused,
+    or raised. On an error the record is written first and the exception is
+    re-raised unchanged, so callers behave exactly as before.
+
+    `entrypoint` says what started the run ("cli", "http", "cost").
+    `cache=False` forces a real model call — use it whenever a run is being
+    measured, because a cached answer costs 0 tokens and ~0 ms.
+    """
+    import time
+
+    import generate as gen
+    import runlog
+
+    record = {
+        "ts": runlog.now_iso(),
+        "run_id": runlog.new_run_id(),
+        "entrypoint": entrypoint,
+        "question": question,
+        "retrieve_ms": None,
+        "generate_ms": 0.0,
+    }
+    calls_before = gen.call_count()
+    hits_before = gen.cache_hit_count()
+    tokens_before = gen.token_counts()
+    timings = {}
+    started = time.perf_counter()
+
+    try:
+        outcome = _ask_pipeline_inner(
+            question, corpus, variant, top_k, threshold,
+            on_gate, on_prompt, history, cache, timings,
+        )
+    except Exception as exc:
+        tokens_after = gen.token_counts()
+        record.update(
+            status="error",
+            answer=None,
+            error=f"{type(exc).__name__}: {exc}",
+            duration_ms=round((time.perf_counter() - started) * 1000, 1),
+            retrieve_ms=timings.get("retrieve_ms"),
+            generate_ms=timings.get("generate_ms", 0.0),
+            model_calls=gen.call_count() - calls_before,
+            cache_hit=gen.cache_hit_count() > hits_before,
+            prompt_tokens=tokens_after["prompt"] - tokens_before["prompt"],
+            output_tokens=tokens_after["output"] - tokens_before["output"],
+            http_status=500 if entrypoint == "http" else None,
+        )
+        runlog.write(record)
+        exc.run_id = record["run_id"]  # lets serve.py return it
+        raise
+
+    tokens_after = gen.token_counts()
+    record.update(
+        status="refused" if outcome["refused"] else "ok",
+        answer=outcome["answer"],
+        duration_ms=round((time.perf_counter() - started) * 1000, 1),
+        retrieve_ms=timings.get("retrieve_ms"),
+        generate_ms=timings.get("generate_ms", 0.0),
+        best_distance=round(outcome["best_distance"], 4),
+        threshold=outcome["threshold"],
+        sources=outcome["sources"],
+        model_calls=gen.call_count() - calls_before,
+        cache_hit=gen.cache_hit_count() > hits_before,
+        prompt_tokens=tokens_after["prompt"] - tokens_before["prompt"],
+        output_tokens=tokens_after["output"] - tokens_before["output"],
+        error=None,
+        http_status=200 if entrypoint == "http" else None,
+    )
+    runlog.write(record)
+    outcome["run_id"] = record["run_id"]
+    outcome["duration_ms"] = record["duration_ms"]
+    return outcome
+
+
+def _ask_pipeline_inner(
+    question, corpus, variant, top_k, threshold,
+    on_gate, on_prompt, history, cache, timings,
 ):
     """Retrieve, gate, answer. Returns the outcome and prints nothing.
 
@@ -201,16 +284,20 @@ def ask_pipeline(
     prompt just before it goes out — that's how `--show-prompt` shows you the
     prompt while the model is still thinking rather than after.
     """
+    import time
+
     from store import search
     import gate
     from generate import answer_from_chunks, build_prompt
 
+    t0 = time.perf_counter()
     results = search(
         question,
         top_k=top_k or config.TOP_K,
         corpus=corpus or config.CORPUS,
         variant=variant,
     )
+    timings["retrieve_ms"] = round((time.perf_counter() - t0) * 1000, 1)
     decision = gate.check(results, threshold=threshold)
     if on_gate is not None:
         on_gate(decision)
@@ -233,7 +320,13 @@ def ask_pipeline(
         on_prompt(prompt)
 
     outcome["prompt"] = prompt
-    outcome["answer"] = answer_from_chunks(question, results, history=history)
+    t1 = time.perf_counter()
+    try:
+        outcome["answer"] = answer_from_chunks(
+            question, results, cache=cache, history=history
+        )
+    finally:
+        timings["generate_ms"] = round((time.perf_counter() - t1) * 1000, 1)
     outcome["sources"] = sorted({r.source for r in results})
     return outcome
 
