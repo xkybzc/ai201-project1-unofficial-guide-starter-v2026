@@ -4,6 +4,86 @@ Everything about how the starter works and how to use it.
 
 ---
 
+## Capstone run path — Path B, local with logs
+
+This system runs on one machine, started by one command, and every request it
+answers leaves a record in `logs/runs.jsonl`. It is not hosted: the embedding
+model loads locally, and with Chroma and onnxruntime that does not fit the
+free tier's 512 MB.
+
+### Start it
+
+From a clean checkout. These are Windows Command Prompt (cmd) commands; on
+macOS or Linux use `python3 -m venv .venv`, `source .venv/bin/activate` and
+`cp` instead of `copy`.
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+```
+
+Paste your Gemini key into `.env` as `GEMINI_API_KEY=...`, then:
+
+```bash
+python serve.py
+```
+
+That one command builds the index if there isn't one (`chroma_db/` is not
+committed, so a fresh clone never has one), then serves on port 5000. The
+first start also downloads the embedding model, so expect it to take a while
+once. Leave it running.
+
+Send it a question from a second terminal (activate the venv there too):
+
+```bash
+curl http://localhost:5000/health
+curl -X POST http://localhost:5000/ask -H "Content-Type: application/json" -d "{\"question\": \"What is the deadline for declaring a major?\"}"
+```
+
+### Read the record
+
+```cmd
+python run_log.py tail
+python run_log.py tail -n 20
+python run_log.py tail --status error
+python run_log.py summary
+```
+
+`tail` prints the last runs, one JSON object per line; `summary` prints counts
+by status and mean time and tokens.
+
+Every request to `/ask`, and every `python app.py ask`, writes one line to
+`logs/runs.jsonl`. That includes refused questions, crashed runs, and requests
+rejected for having no question in them. `run_eval.py` does not write to this
+log; it keeps its own report in `results/`.
+
+### Measure cost
+
+```cmd
+set AI201_CACHE=0
+python measure_cost.py
+```
+
+Ten uncached runs; the report goes to `results/cost_*.md`. Turn the cache off
+whenever you are measuring: a cached answer reports 0 tokens and almost no
+time, and the log marks it `"cache_hit": true`. `set` only lasts for that
+terminal window. (macOS/Linux: `AI201_CACHE=0 python measure_cost.py`.)
+
+### What the environment needs
+
+| Thing | Value |
+|---|---|
+| Python | 3.11.0: output of `python --version` (3.11–3.13 supported, not 3.14) |
+| Dependencies | `requirements.txt` (ranges); exact versions in `requirements.lock` from `pip freeze > requirements.lock` |
+| Embedding model | `all-MiniLM-L6-v2`, ONNX build bundled by Chroma, downloaded on first use to `~/.cache/chroma/onnx_models/`. Download 83.2 MB (onnx.tar.gz). Unpacked 91.3 MB (model.onnx). Total on disk 174,5 MB.|
+| Index | `chroma_db/`, built by `python serve.py` or `python app.py index` |
+| API key | `GEMINI_API_KEY` in `.env` (not committed) |
+| Network | Gemini API for answers; Chroma's model CDN on first run only |
+
+---
+
 ## Before your first class
 
 Setup happens **before class**, not during it. The

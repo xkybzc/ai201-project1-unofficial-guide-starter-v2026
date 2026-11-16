@@ -428,6 +428,140 @@ Also, maybe the criterion 4 cause the none of the documents exceed the 600 chara
 
 
 ## Capstone
-**Shape and Path:** Shape A, deploy and instrument, on Path B, local with logs. Before this unit, serve.py could answer questions over HTTP but left no record of what it did, so nothing it did could be checked afterwards. The extension is the operational layer around the pipeline that already exists. Every run, whether answered, refused by the gate, crashed, or rejected for missing input, writes one JSON record to logs/runs.jsonl. The record has named fields for the question, the answer, total time split into retrieval and generation, the best distance, the sources, and the token counts the model service reported. python serve.py starts the whole system from a clean checkout, building the index first if there isn’t one. measure_cost.py turns ten uncached runs from that log into a per-run cost.
+
+**The System**
+
+The Unofficial Guide, the retrieval-augmented question system over the
+`campus_life` corpus from units 1 and 2. It retrieves the closest posts for a
+question, refuses through a relevance gate when nothing is close enough, and
+otherwise answers from the retrieved posts with the source file named.
+
+
+**Shape and Path:**
+
+Shape A, deploy and instrument, on Path B, local with logs. Before this unit, serve.py could answer questions over HTTP but left no record of what it did, so nothing it did could be checked afterwards. The extension is the operational layer around the pipeline that already exists. Every run, whether answered, refused by the gate, crashed, or rejected for missing input, writes one JSON record to logs/runs.jsonl. The record has named fields for the question, the answer, total time split into retrieval and generation, the best distance, the sources, and the token counts the model service reported. python serve.py starts the whole system from a clean checkout, building the index first if there isn’t one. measure_cost.py turns ten uncached runs from that log into a per-run cost.
 
 **Out of scope:** I not choose path A
+
+**How to Run It**
+
+See `RUNNING.md`, section "Capstone run path". The start command is
+`python serve.py`.
+
+**Instrumentation**
+
+Every request to `/ask`, and every `python app.py ask`, appends one JSON object
+to `logs/runs.jsonl`, written by `run_log.py::write`. Answered, refused and
+errored runs are logged by `app.py::ask_pipeline`; requests with no question are
+logged by `serve.py::ask` before they reach the pipeline. Fields: `ts`,
+`run_id`, `entrypoint`, `status` (ok / refused / rejected / error), `question`,
+`answer`, `duration_ms`, `retrieve_ms`, `generate_ms`, `best_distance`,
+`threshold`, `sources`, `model_calls`, `cache_hit`, `prompt_tokens`,
+`output_tokens`, `error`, `http_status`.
+
+
+10 LOG ENTRIES
+```bash
+{"ts": "2026-11-16T00:05:17.128+00:00", "run_id": "50f9f173", "entrypoint": "http", "status": "ok", "question": "Is morrow house noisy?", "answer": "Yes, Morrow House is loud until about 1am on weekends and has no enforced quiet hours (housing_morrow_house.txt and housing_morrow_house_noise.txt).", "duration_ms": 815.9, "retrieve_ms": 52.1, "generate_ms": 763.8, "best_distance": 0.3658, "threshold": 0.6, "sources": ["housing_fenwick_court_noise.txt", "housing_innisfree_hall_noise.txt", "housing_morrow_house.txt", "housing_morrow_house_noise.txt", "housing_old_brewhouse_noise.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 596, "output_tokens": 38, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:17.972+00:00", "run_id": "c9d21f34", "entrypoint": "http", "status": "ok", "question": "Does CS 210 have a curve for the exams?", "answer": "Yes, the midterms for CS 210 are curved, but the final is not curved (sources: course_cs_210_exams.txt and course_cs_210.txt).", "duration_ms": 784.7, "retrieve_ms": 56.2, "generate_ms": 728.5, "best_distance": 0.3359, "threshold": 0.6, "sources": ["course_cs_210.txt", "course_cs_210_exams.txt", "course_cs_340_exams.txt", "course_engl_205_exams.txt", "course_stat_150_exams.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 519, "output_tokens": 45, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:21.291+00:00", "run_id": "82ee49eb", "entrypoint": "http", "status": "ok", "question": "What is the maximum hours per week for work-study?", "answer": "The maximum is 20 hours a week during the term (from money_jobs.txt).", "duration_ms": 771.2, "retrieve_ms": 51.8, "generate_ms": 719.3, "best_distance": 0.4623, "threshold": 0.6, "sources": ["course_engl_205_workload.txt", "course_phys_130_workload.txt", "course_stat_150_workload.txt", "money_jobs.txt", "study_group_rooms.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 555, "output_tokens": 20, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:27.284+00:00", "run_id": "98b991cf", "entrypoint": "http", "status": "refused", "question": "Who won the 1994 World Cup?", "answer": "I don't have enough information about that.", "duration_ms": 58.4, "retrieve_ms": 58.4, "generate_ms": 0.0, "best_distance": 0.8859, "threshold": 0.6, "sources": [], "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:28.858+00:00", "run_id": "c3e532a4", "entrypoint": "http", "status": "refused", "question": "How do I write a for loop in Rust?", "answer": "I don't have enough information about that.", "duration_ms": 54.0, "retrieve_ms": 54.0, "generate_ms": 0.0, "best_distance": 0.896, "threshold": 0.6, "sources": [], "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:35.637+00:00", "run_id": "b958024e", "entrypoint": "http", "status": "ok", "question": "How much does laundry cost in Innisfree Hall?", "answer": "Laundry in Innisfree Hall costs $1.75 for a wash and $1.75 for a dry. \n\nThis information comes from *housing_innisfree_hall.txt* and *housing_innisfree_hall_laundry.txt*.", "duration_ms": 566.7, "retrieve_ms": 55.9, "generate_ms": 510.7, "best_distance": 0.2052, "threshold": 0.6, "sources": ["housing_aldridge_hall.txt", "housing_aldridge_hall_laundry.txt", "housing_calder_annexe.txt", "housing_innisfree_hall.txt", "housing_innisfree_hall_laundry.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 709, "output_tokens": 57, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:36.231+00:00", "run_id": "7acfaaf0", "entrypoint": "http", "status": "ok", "question": "How long is the wait at Pellew Dining Hall at peak?", "answer": "The wait at Pellew Dining Hall at peak is 12 to 18 minutes (dining_pellew_dining_hall.txt and dining_pellew_dining_hall_followup.txt).", "duration_ms": 724.0, "retrieve_ms": 50.1, "generate_ms": 673.8, "best_distance": 0.1568, "threshold": 0.6, "sources": ["dining_halden_hall.txt", "dining_halden_hall_followup.txt", "dining_pellew_dining_hall.txt", "dining_pellew_dining_hall_followup.txt", "dining_the_ridgeway_cafe_followup.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 704, "output_tokens": 46, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:38.091+00:00", "run_id": "c3f08fde", "entrypoint": "http", "status": "ok", "question": "Is BIOL 160 curved?", "answer": "No, BIOL 160 is not curved. \n\nSource: course_biol_160_exams.txt (also mentioned in course_biol_160.txt)", "duration_ms": 638.5, "retrieve_ms": 53.1, "generate_ms": 585.4, "best_distance": 0.44, "threshold": 0.6, "sources": ["course_biol_160.txt", "course_biol_160_exams.txt", "course_engl_205_exams.txt", "course_phys_130.txt", "course_phys_130_exams.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 520, "output_tokens": 43, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:44.137+00:00", "run_id": "cc5f2d5b", "entrypoint": "http", "status": "rejected", "question": "''", "answer": null, "duration_ms": 0.1, "retrieve_ms": null, "generate_ms": 0.0, "best_distance": null, "threshold": null, "sources": null, "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "rejected input: no question", "http_status": 400}
+{"ts": "2026-11-16T00:06:24.359+00:00", "run_id": "1a764d8b", "entrypoint": "cli", "status": "error", "question": "test", "answer": null, "duration_ms": 438.6, "retrieve_ms": null, "generate_ms": 0.0, "best_distance": null, "threshold": null, "sources": null, "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "RuntimeError: No index called 'campus_life__default'. Run `python app.py index` first.", "http_status": null}
+```
+
+1 FAIL RUN
+```bash
+{"ts": "2026-11-16T00:06:24.359+00:00", "run_id": "1a764d8b", "entrypoint": "cli", "status": "error", "question": "test", "answer": null, "duration_ms": 438.6, "retrieve_ms": null, "generate_ms": 0.0, "best_distance": null, "threshold": null, "sources": null, "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "RuntimeError: No index called 'campus_life__default'. Run `python app.py index` first.", "http_status": null}
+```
+
+**What It Costs**
+
+Method: `measure_cost.py::main` sends 10 questions from `questions.py` through
+`app.py::ask_pipeline` with the cache off, then averages the `prompt_tokens`,
+`output_tokens` and `duration_ms` fields of those 10 records. Token counts come
+from the `usage_metadata` on each Gemini response, not from the pricing page.
+The report is committed in `results/`.
+
+Averages over the answered runs:
+
+| Measure | Mean per run |
+|---|---|
+| Input tokens | 547.4 |
+| Output tokens | 32.8 |
+| Total tokens | 580.2 |
+| Total duration | 934.1 ms |
+| Retrieval (embed + search) | 100.1 ms |
+| Generation (model call) | 735.0 ms |
+
+**Criteria**
+
+See `criteria.md`, section "Capstone". Committed in <!-- YOU: commit hash -->
+before any results.
+
+**Run Log — Before**
+
+<!-- YOU: one row per criterion, three trials each, same table format as the
+     brief. Real output for each criterion underneath, naming the file and
+     function that produced it. -->
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. | | | | | |
+| 2. | | | | | |
+| 3. | | | | | |
+| 4. | | | | | |
+| 5. | | | | | |
+
+**Verdicts and Diagnoses**
+
+<!-- YOU: MET or MISSED per criterion against the target as written. For
+     each miss, the stage and the mechanism. -->
+
+**The Improvement**
+
+<!-- YOU: the one change, which diagnosis it follows from, then the full
+     re-run. -->
+
+**Run Log — After**
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. | | | | | |
+| 2. | | | | | |
+| 3. | | | | | |
+| 4. | | | | | |
+| 5. | | | | | |
+
+<!-- YOU: did it help? Say so plainly, including any trade. -->
+
+**What's Still Broken**
+
+<!-- YOU: for each criterion still missed, what you'd do and why you stopped.
+     Known issues outside this shape, found while reading the code:
+       - store.py::search runs a 20-result query and then overwrites it with a
+         5-result query, so the hybrid rerank only reorders the same 5 chunks.
+         That is why unit 2's "after" sources didn't change.
+       - chunker.py::split_documents doubles text when merging short pieces
+         (`pieces[-1] += pieces[-1] + ...`) and numbers chunks corpus-wide
+         instead of per document. Dormant on campus_life: no document is over
+         600 characters.
+       - run_eval.py calls retrieval and generation directly, so its runs are
+         not in logs/runs.jsonl. -->
+
+**What I'd Do Next**
+
+<!-- YOU: two sentences. The one thing first, and why that one. -->
+
+**How I Used AI**
+
+<!-- YOU: specific moments, in your words. For accuracy: Claude wrote
+     run_log.py, measure_cost.py, the logging wrapper in app.py::ask_pipeline,
+     the serve.py changes and the Capstone section of RUNNING.md, tested
+     against stand-ins for Chroma and Gemini (not your real system). Claude
+     pointed out the store.py and chunker.py bugs. Claude did not write the
+     criteria, verdicts or diagnoses. -->

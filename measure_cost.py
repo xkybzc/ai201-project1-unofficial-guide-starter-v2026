@@ -42,7 +42,7 @@ def main():
                         help="USD per 1M output tokens (optional)")
     args = parser.parse_args()
 
-    import runlog
+    import run_log
     from app import ask_pipeline
 
     items = qs.answered()
@@ -62,7 +62,7 @@ def main():
             print(f"  run {i + 1:>2}: ERROR {type(exc).__name__}: {exc}")
 
     wanted = {r for r in run_ids if r}
-    rows = [r for r in runlog.read() if r.get("run_id") in wanted]
+    rows = [r for r in run_log.read() if r.get("run_id") in wanted]
     answered = [r for r in rows if r.get("status") == "ok"]
     refused = [r for r in rows if r.get("status") == "refused"]
     errors = [r for r in rows if r.get("status") == "error"]
