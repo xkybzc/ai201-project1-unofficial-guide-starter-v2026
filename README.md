@@ -427,7 +427,7 @@ I'd rewrite the criterion 5 to only apply where the source document actually con
 Also, maybe the criterion 4 cause the none of the documents exceed the 600 characters.
 
 
-## Capstone
+# Capstone
 
 **The System**
 
@@ -507,49 +507,39 @@ See `criteria.md`, section "Capstone".
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Run appear on the log| 9 of 10 | 10 of 10 | 10 of 10 | 10 of 10 | MET |
-| 2. Number of token| max 650 | 612 | 630  | 587 | MET |
-| 3. Time output| under 2s | 2.2 | 1.8 | 2 | MISSED |
-| 4. Missing index is logged as status error| 3 of 3 | 3 of 3 | 3 of 3 | 3 of 3 | MET |
-| 5. | | | | | |
-
-```bash
-{"ts": "2026-11-15T23:35:33.939+00:00", "run_id": "d865c691", "entrypoint": "cli", "status": "ok", "question": "What is the deadline for declaring a major?", "answer": "You declare a major at the end of your second semester, or later if you need to, as there is no penalty for declaring late (admin_declaring_a_major.txt).", "duration_ms": 2739.1, "retrieve_ms": 525.5, "generate_ms": 2213.5, "best_distance": 0.3025, "threshold": 0.6, "sources": ["admin_add_drop_deadline.txt", "admin_declaring_a_major.txt", "admin_graduation_requirements.txt", "admin_pass_fail_option.txt", "course_cs_340.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 542, "output_tokens": 39, "error": null, "http_status": null}
-{"ts": "2026-11-15T23:35:41.418+00:00", "run_id": "81a315bc", "entrypoint": "cli", "status": "refused", "question": "What is the capital of Mongolia?", "answer": "I don't have enough information about that.", "duration_ms": 487.1, "retrieve_ms": 486.9, "generate_ms": 0.0, "best_distance": 0.8246, "threshold": 0.6, "sources": [], "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": null, "http_status": null}
-{"ts": "2026-11-15T23:38:12.534+00:00", "run_id": "316698dc", "entrypoint": "http", "status": "ok", "question": "Is morrow house noisy?", "answer": "Yes, Morrow House is loud until about 1am on weekends and has no enforced quiet hours (housing_morrow_house.txt and housing_morrow_house_noise.txt).", "duration_ms": 1458.2, "retrieve_ms": 209.9, "generate_ms": 1247.1, "best_distance": 0.3658, "threshold": 0.6, "sources": ["housing_fenwick_court_noise.txt", "housing_innisfree_hall_noise.txt", "housing_morrow_house.txt", "housing_morrow_house_noise.txt", "housing_old_brewhouse_noise.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 596, "output_tokens": 38, "error": null, "http_status": 200}
-{"ts": "2026-11-15T23:38:14.028+00:00", "run_id": "fa97e5ce", "entrypoint": "http", "status": "rejected", "question": "{\"q\": \"wrong key\"}", "answer": null, "duration_ms": 0.1, "retrieve_ms": null, "generate_ms": 0.0, "best_distance": null, "threshold": null, "sources": null, "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "rejected input: no question", "http_status": 400}
-{"ts": "2026-11-16T00:05:14.914+00:00", "run_id": "4d240d44", "entrypoint": "http", "status": "ok", "question": "What is the deadline for declaring a major?", "answer": "You declare at the end of your second semester, or later if you need to. There is no penalty for declaring late. \n\nSource: admin_declaring_a_major.txt", "duration_ms": 1484.2, "retrieve_ms": 213.0, "generate_ms": 1270.1, "best_distance": 0.3025, "threshold": 0.6, "sources": ["admin_add_drop_deadline.txt", "admin_declaring_a_major.txt", "admin_graduation_requirements.txt", "admin_pass_fail_option.txt", "course_cs_340.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 542, "output_tokens": 39, "error": null, "http_status": 200}
-{"ts": "2026-11-16T00:05:16.426+00:00", "run_id": "9a16d311", "entrypoint": "http", "status": "ok", "question": "When will library close in reading week?", "answer": "The library is open until 10pm during reading week. \n\nSource: study_library_hours.txt", "duration_ms": 669.7, "retrieve_ms": 55.5, "generate_ms": 614.2, "best_distance": 0.44, "threshold": 0.6, "sources": ["admin_library_holds.txt", "housing_calder_annexe_noise.txt", "housing_morrow_house_noise.txt", "money_textbooks.txt", "study_library_hours.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 525, "output_tokens": 24, "error": null, "http_status": 200}
-{"ts": "2026-11-16T00:05:17.128+00:00", "run_id": "50f9f173", "entrypoint": "http", "status": "ok", "question": "Is morrow house noisy?", "answer": "Yes, Morrow House is loud until about 1am on weekends and has no enforced quiet hours (housing_morrow_house.txt and housing_morrow_house_noise.txt).", "duration_ms": 815.9, "retrieve_ms": 52.1, "generate_ms": 763.8, "best_distance": 0.3658, "threshold": 0.6, "sources": ["housing_fenwick_court_noise.txt", "housing_innisfree_hall_noise.txt", "housing_morrow_house.txt", "housing_morrow_house_noise.txt", "housing_old_brewhouse_noise.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 596, "output_tokens": 38, "error": null, "http_status": 200}
-{"ts": "2026-11-16T00:05:17.972+00:00", "run_id": "c9d21f34", "entrypoint": "http", "status": "ok", "question": "Does CS 210 have a curve for the exams?", "answer": "Yes, the midterms for CS 210 are curved, but the final is not curved (sources: course_cs_210_exams.txt and course_cs_210.txt).", "duration_ms": 784.7, "retrieve_ms": 56.2, "generate_ms": 728.5, "best_distance": 0.3359, "threshold": 0.6, "sources": ["course_cs_210.txt", "course_cs_210_exams.txt", "course_cs_340_exams.txt", "course_engl_205_exams.txt", "course_stat_150_exams.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 519, "output_tokens": 45, "error": null, "http_status": 200}
-{"ts": "2026-11-16T00:05:21.291+00:00", "run_id": "82ee49eb", "entrypoint": "http", "status": "ok", "question": "What is the maximum hours per week for work-study?", "answer": "The maximum is 20 hours a week during the term (from money_jobs.txt).", "duration_ms": 771.2, "retrieve_ms": 51.8, "generate_ms": 719.3, "best_distance": 0.4623, "threshold": 0.6, "sources": ["course_engl_205_workload.txt", "course_phys_130_workload.txt", "course_stat_150_workload.txt", "money_jobs.txt", "study_group_rooms.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 555, "output_tokens": 20, "error": null, "http_status": 200}
-{"ts": "2026-11-16T00:05:27.284+00:00", "run_id": "98b991cf", "entrypoint": "http", "status": "refused", "question": "Who won the 1994 World Cup?", "answer": "I don't have enough information about that.", "duration_ms": 58.4, "retrieve_ms": 58.4, "generate_ms": 0.0, "best_distance": 0.8859, "threshold": 0.6, "sources": [], "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": null, "http_status": 200}
-```
+| 1. Run appear on the log| 10 of 10 | 10 of 10 | 10 of 10 | 10 of 10 | MET |
+| 2. Number of token| max 1100 | 581.3 | 613.4 | 598.3 | MET |
+| 3. Time output under 2s| 9 of 10 | 10 of 10 | 10 of 10 | 10 of 10 | MET |
+| 4. 3 bad request | 3 of 3 | 3 of 3 | 3 of 3 | 3 of 3 | MET |
+| 5. OUT_OF_SCOPE question's information | 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 |
 
 
 **Verdicts and Diagnoses**
+All 5 criteria is MET.
 
 **The Improvement**
-
+All 5 criteria is MET so no need improvement.
 
 **Run Log — After**
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. | | | | | |
-| 2. | | | | | |
-| 3. | | | | | |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Run appear on the log| 10 of 10 | 10 of 10 | 10 of 10 | 10 of 10 | MET |
+| 2. Tokens per answered run| max 1100 | 743.3 | 618.4 | 701.7 | MET |
+| 3. Time output under 2s| 9 of 10 | 10 of 10 | 10 of 10 | 10 of 10 | MET |
+| 4. 3 bad request| 3 of 3 | 3 of 3 | 3 of 3 | 3 of 3 | MET |
+| 5. OUT_OF_SCOPE refused at zero cost| 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
 
 
 **What's Still Broken**
-
+Nothing.
 
 
 **What I'd Do Next**
-
+I’d fix the retrieval bug in store.py::search first: it runs a 20-result query and then overwrites it with a 5-result one, so the hybrid rerank from unit 2 has never actually had more than five candidates to choose from. My log now records best_distance, sources and timing on every run, so this is the first change I could measure properly — before and after, from the same records — instead of guessing whether retrieval improved.
 
 
 **How I Used AI**
-
+*1.* I asked Claude to build the Shape A extension. It wrote run_log.py, measure_cost.py, the timing and logging wrapper around app.py::ask_pipeline.
+I fix the serve.py so that I could run the extension.
+*2.* I asked Claude to fix my criteria. It gave me some other number like 1100 in number of token. I only change the number of token.

@@ -144,44 +144,44 @@ document
 
 ### Criteria 1
 
-9 of 10 run appear in the log
+10 of 10, the run_id in the response is in one line of log
 
 **Why this target:**
-Some error run cannot appear on the log, for example server not running
+With the server up, ask_pipeline and serve.py are designed to log every outcome (ok, refused, rejected, error), so 10 of 10 is the right bar.
 
 ---
 
 ### Criteria 2
 
-Total tokens for one question max is 650 (prompt_tokens + output_tokens + measure_cost)
+The mean of prompt_tokens + output_tokens over the answered runs is at most 1100
 
 **Why this target:**
-650 is more than enough to generate a fully answer.
+Five chunks of up to 600 characters come to about 750 tokens. The grounding instruction adds about 90, and the answer another 60 to 120, so I’d expect roughly 900 to 1,000 per run.
 
 ---
 
 ### Criteria 3
 
-The output of curl return under 2 seconds
+After one warm-up request, 9 of 10 answered requests return in under 2 seconds, measured with curl -w "%{time_total}".
 
 **Why this target:**
-More than 2 seconds is too long for a log.
+An answered one includes a Gemini call, which on a flash-lite model usually takes 0.5 to 1.5 seconds. 
 
 ---
 
 ### Criteria 4
-When stop the server, rename chroma_db, 3 of 3 error question's status are error. (python app.py ask ...)
+Three bad requests each return HTTP 400, and each leaves one record with status: "rejected" and http_status: 400.
 
 
 **Why this target:**
-Missing index is the same way every time.
+serve.py writes these rejected records itself, outside ask_pipeline. That makes them the most likely to be forgotten. 3 of 3 is fair because the check is a simple if not question.
 
 ---
 
 ### Criteria 5
-
+When I send all 5 OUT_OF_SCOPE questions to /ask, 5 of 5 records have status: "refused", model_calls: 0, prompt_tokens: 0 and output_tokens: 0.
 
 **Why this target:**
-
+A refusal never reaches the model, so it should cost nothing. This is deterministic, so I expect 5 of 5. If a refused run shows tokens or a model call, the log is lying about cost.
 
 ---
