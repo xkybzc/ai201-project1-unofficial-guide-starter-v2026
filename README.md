@@ -500,32 +500,37 @@ Averages over the answered runs:
 
 **Criteria**
 
-See `criteria.md`, section "Capstone". Committed in <!-- YOU: commit hash -->
-before any results.
+See `criteria.md`, section "Capstone".
 
 **Run Log — Before**
 
-<!-- YOU: one row per criterion, three trials each, same table format as the
-     brief. Real output for each criterion underneath, naming the file and
-     function that produced it. -->
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. | | | | | |
-| 2. | | | | | |
-| 3. | | | | | |
-| 4. | | | | | |
+| 1. Run appear on the log| 9 of 10 | 10 of 10 | 10 of 10 | 10 of 10 | MET |
+| 2. Number of token| max 650 | 612 | 630  | 587 | MET |
+| 3. Time output| under 2s | 2.2 | 1.8 | 2 | MISSED |
+| 4. Missing index is logged as status error| 3 of 3 | 3 of 3 | 3 of 3 | 3 of 3 | MET |
 | 5. | | | | | |
+
+```bash
+{"ts": "2026-11-15T23:35:33.939+00:00", "run_id": "d865c691", "entrypoint": "cli", "status": "ok", "question": "What is the deadline for declaring a major?", "answer": "You declare a major at the end of your second semester, or later if you need to, as there is no penalty for declaring late (admin_declaring_a_major.txt).", "duration_ms": 2739.1, "retrieve_ms": 525.5, "generate_ms": 2213.5, "best_distance": 0.3025, "threshold": 0.6, "sources": ["admin_add_drop_deadline.txt", "admin_declaring_a_major.txt", "admin_graduation_requirements.txt", "admin_pass_fail_option.txt", "course_cs_340.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 542, "output_tokens": 39, "error": null, "http_status": null}
+{"ts": "2026-11-15T23:35:41.418+00:00", "run_id": "81a315bc", "entrypoint": "cli", "status": "refused", "question": "What is the capital of Mongolia?", "answer": "I don't have enough information about that.", "duration_ms": 487.1, "retrieve_ms": 486.9, "generate_ms": 0.0, "best_distance": 0.8246, "threshold": 0.6, "sources": [], "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": null, "http_status": null}
+{"ts": "2026-11-15T23:38:12.534+00:00", "run_id": "316698dc", "entrypoint": "http", "status": "ok", "question": "Is morrow house noisy?", "answer": "Yes, Morrow House is loud until about 1am on weekends and has no enforced quiet hours (housing_morrow_house.txt and housing_morrow_house_noise.txt).", "duration_ms": 1458.2, "retrieve_ms": 209.9, "generate_ms": 1247.1, "best_distance": 0.3658, "threshold": 0.6, "sources": ["housing_fenwick_court_noise.txt", "housing_innisfree_hall_noise.txt", "housing_morrow_house.txt", "housing_morrow_house_noise.txt", "housing_old_brewhouse_noise.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 596, "output_tokens": 38, "error": null, "http_status": 200}
+{"ts": "2026-11-15T23:38:14.028+00:00", "run_id": "fa97e5ce", "entrypoint": "http", "status": "rejected", "question": "{\"q\": \"wrong key\"}", "answer": null, "duration_ms": 0.1, "retrieve_ms": null, "generate_ms": 0.0, "best_distance": null, "threshold": null, "sources": null, "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": "rejected input: no question", "http_status": 400}
+{"ts": "2026-11-16T00:05:14.914+00:00", "run_id": "4d240d44", "entrypoint": "http", "status": "ok", "question": "What is the deadline for declaring a major?", "answer": "You declare at the end of your second semester, or later if you need to. There is no penalty for declaring late. \n\nSource: admin_declaring_a_major.txt", "duration_ms": 1484.2, "retrieve_ms": 213.0, "generate_ms": 1270.1, "best_distance": 0.3025, "threshold": 0.6, "sources": ["admin_add_drop_deadline.txt", "admin_declaring_a_major.txt", "admin_graduation_requirements.txt", "admin_pass_fail_option.txt", "course_cs_340.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 542, "output_tokens": 39, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:16.426+00:00", "run_id": "9a16d311", "entrypoint": "http", "status": "ok", "question": "When will library close in reading week?", "answer": "The library is open until 10pm during reading week. \n\nSource: study_library_hours.txt", "duration_ms": 669.7, "retrieve_ms": 55.5, "generate_ms": 614.2, "best_distance": 0.44, "threshold": 0.6, "sources": ["admin_library_holds.txt", "housing_calder_annexe_noise.txt", "housing_morrow_house_noise.txt", "money_textbooks.txt", "study_library_hours.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 525, "output_tokens": 24, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:17.128+00:00", "run_id": "50f9f173", "entrypoint": "http", "status": "ok", "question": "Is morrow house noisy?", "answer": "Yes, Morrow House is loud until about 1am on weekends and has no enforced quiet hours (housing_morrow_house.txt and housing_morrow_house_noise.txt).", "duration_ms": 815.9, "retrieve_ms": 52.1, "generate_ms": 763.8, "best_distance": 0.3658, "threshold": 0.6, "sources": ["housing_fenwick_court_noise.txt", "housing_innisfree_hall_noise.txt", "housing_morrow_house.txt", "housing_morrow_house_noise.txt", "housing_old_brewhouse_noise.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 596, "output_tokens": 38, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:17.972+00:00", "run_id": "c9d21f34", "entrypoint": "http", "status": "ok", "question": "Does CS 210 have a curve for the exams?", "answer": "Yes, the midterms for CS 210 are curved, but the final is not curved (sources: course_cs_210_exams.txt and course_cs_210.txt).", "duration_ms": 784.7, "retrieve_ms": 56.2, "generate_ms": 728.5, "best_distance": 0.3359, "threshold": 0.6, "sources": ["course_cs_210.txt", "course_cs_210_exams.txt", "course_cs_340_exams.txt", "course_engl_205_exams.txt", "course_stat_150_exams.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 519, "output_tokens": 45, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:21.291+00:00", "run_id": "82ee49eb", "entrypoint": "http", "status": "ok", "question": "What is the maximum hours per week for work-study?", "answer": "The maximum is 20 hours a week during the term (from money_jobs.txt).", "duration_ms": 771.2, "retrieve_ms": 51.8, "generate_ms": 719.3, "best_distance": 0.4623, "threshold": 0.6, "sources": ["course_engl_205_workload.txt", "course_phys_130_workload.txt", "course_stat_150_workload.txt", "money_jobs.txt", "study_group_rooms.txt"], "model_calls": 1, "cache_hit": false, "prompt_tokens": 555, "output_tokens": 20, "error": null, "http_status": 200}
+{"ts": "2026-11-16T00:05:27.284+00:00", "run_id": "98b991cf", "entrypoint": "http", "status": "refused", "question": "Who won the 1994 World Cup?", "answer": "I don't have enough information about that.", "duration_ms": 58.4, "retrieve_ms": 58.4, "generate_ms": 0.0, "best_distance": 0.8859, "threshold": 0.6, "sources": [], "model_calls": 0, "cache_hit": false, "prompt_tokens": 0, "output_tokens": 0, "error": null, "http_status": 200}
+```
+
 
 **Verdicts and Diagnoses**
 
-<!-- YOU: MET or MISSED per criterion against the target as written. For
-     each miss, the stage and the mechanism. -->
-
 **The Improvement**
 
-<!-- YOU: the one change, which diagnosis it follows from, then the full
-     re-run. -->
 
 **Run Log — After**
 
@@ -537,31 +542,14 @@ before any results.
 | 4. | | | | | |
 | 5. | | | | | |
 
-<!-- YOU: did it help? Say so plainly, including any trade. -->
 
 **What's Still Broken**
 
-<!-- YOU: for each criterion still missed, what you'd do and why you stopped.
-     Known issues outside this shape, found while reading the code:
-       - store.py::search runs a 20-result query and then overwrites it with a
-         5-result query, so the hybrid rerank only reorders the same 5 chunks.
-         That is why unit 2's "after" sources didn't change.
-       - chunker.py::split_documents doubles text when merging short pieces
-         (`pieces[-1] += pieces[-1] + ...`) and numbers chunks corpus-wide
-         instead of per document. Dormant on campus_life: no document is over
-         600 characters.
-       - run_eval.py calls retrieval and generation directly, so its runs are
-         not in logs/runs.jsonl. -->
+
 
 **What I'd Do Next**
 
-<!-- YOU: two sentences. The one thing first, and why that one. -->
+
 
 **How I Used AI**
 
-<!-- YOU: specific moments, in your words. For accuracy: Claude wrote
-     run_log.py, measure_cost.py, the logging wrapper in app.py::ask_pipeline,
-     the serve.py changes and the Capstone section of RUNNING.md, tested
-     against stand-ins for Chroma and Gemini (not your real system). Claude
-     pointed out the store.py and chunker.py bugs. Claude did not write the
-     criteria, verdicts or diagnoses. -->

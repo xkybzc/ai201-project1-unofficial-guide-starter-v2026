@@ -135,3 +135,53 @@ document
      The whole reason the originals stay visible is so someone can see what you
      said before you knew the answer.
      ───────────────────────────────────────────────────────────────────────── -->
+
+
+# Capstone
+## Extension Criteria
+
+---
+
+### Criteria 1
+
+9 of 10 run appear in the log
+
+**Why this target:**
+Some error run cannot appear on the log, for example server not running
+
+---
+
+### Criteria 2
+
+Total tokens for one question max is 650 (prompt_tokens + output_tokens + measure_cost)
+
+**Why this target:**
+650 is more than enough to generate a fully answer.
+
+---
+
+### Criteria 3
+
+The output of curl return under 2 seconds
+
+**Why this target:**
+More than 2 seconds is too long for a log.
+
+---
+
+### Criteria 4
+When stop the server, rename chroma_db, 3 of 3 error question's status are error. (python app.py ask ...)
+
+
+**Why this target:**
+Missing index is the same way every time.
+
+---
+
+### Criteria 5
+
+
+**Why this target:**
+
+
+---
